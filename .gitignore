@@ -1,0 +1,21 @@
+.env
+__pycache__/
+*.py[cod]
+.venv/
+
+# Credentials and certificates
+.env
+.env.*
+!.env.example
+certbot/
+*.pem
+*.key
+
+# Local files and backups
+backups/
+__pycache__/
+*.py[cod]
+.venv/
+*.log
+*.sqlite
+*.sqlite3

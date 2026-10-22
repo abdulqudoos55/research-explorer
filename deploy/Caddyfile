@@ -1,0 +1,22 @@
+{
+    default_sni 37.27.39.68
+}
+
+research.37-27-39-68.sslip.io {
+    reverse_proxy web:8000
+}
+
+http://37.27.39.68 {
+    handle /.well-known/acme-challenge/* {
+        root * /var/www/certbot
+        file_server
+    }
+    handle {
+        redir https://37.27.39.68:8002{uri} permanent
+    }
+}
+
+https://37.27.39.68:8002 {
+    tls /etc/letsencrypt/live/research-ip/fullchain.pem /etc/letsencrypt/live/research-ip/privkey.pem
+    reverse_proxy web:8000
+}

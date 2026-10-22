@@ -1,0 +1,10 @@
+[Unit]
+Description=Renew Research Explorer IP certificate
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/research-explorer/deploy/renew-ip-certificate.sh
+TimeoutStartSec=600

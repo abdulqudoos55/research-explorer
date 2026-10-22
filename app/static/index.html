@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Research Explorer</title>
+<style>
+:root{color-scheme:dark;--bg:#091525;--panel:#112238;--line:#29415b;--text:#edf3ff;--muted:#a9bdd6;--mint:#70dfc3}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,Segoe UI,sans-serif}
+button,input{font:inherit}
+button{cursor:pointer}
+button:disabled{opacity:.55;cursor:wait}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid #91c9ff;outline-offset:3px}
+header{padding:18px 26px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--line);background:#0e1f32}
+.brand-icon{color:var(--mint);display:flex}
+.brand{font-size:23px;font-weight:700}
+header small{margin-left:auto;color:var(--muted)}
+.shell{display:grid;grid-template-columns:190px minmax(0,1fr);max-width:1600px;margin:auto}
+nav{padding:26px 14px;border-right:1px solid var(--line)}
+nav button{width:100%;display:flex;gap:12px;align-items:center;text-align:left;background:none;border:0;color:var(--muted);padding:12px;border-radius:8px;margin-bottom:8px}
+nav button.active{background:#193c50;color:#a0f1dd}
+main{min-width:0;padding:30px}
+h1{font-size:clamp(26px,3vw,36px);line-height:1.25;letter-spacing:-.7px;margin:0 0 8px}
+.subtitle{color:var(--muted);margin:0 0 25px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:22px}
+.search-panel,.paper,.side-panel{background:linear-gradient(125deg,#15283e,#102034);border:1px solid var(--line);border-radius:13px}
+.search-panel{padding:18px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:15px}
+.tabs button{background:none;color:var(--muted);border:0;padding:8px 12px;border-radius:7px}
+.tabs button[aria-pressed=true]{background:#28475b;color:#a0f1dd}
+.search-row{display:flex;gap:10px}
+input{min-width:0;width:100%;background:#0a192b;color:var(--text);border:1px solid #49617c;border-radius:8px;padding:12px 14px}
+.primary{background:var(--mint);color:#082d28;border:0;border-radius:8px;padding:11px 20px;font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chips button,.save-btn{background:#183049;color:#cfdeef;border:1px solid #3a5470;border-radius:7px;padding:6px 10px;font-size:13px}
+.save-btn.saved{color:#9bead4;border-color:#4e9e8c}
+#suggestions{border:1px solid #415c78;border-radius:9px;margin-top:12px;overflow:hidden;background:#0c1d30}
+#suggestions button{display:block;width:100%;text-align:left;background:transparent;color:var(--text);border:0;border-bottom:1px solid var(--line);padding:11px 14px}
+#suggestions button:last-child{border-bottom:0}
+#suggestions button:hover,#suggestions button:focus{background:#203d59}
+#suggestions small{display:block;color:var(--muted);font-size:12px}
+#suggestionHelp{font-size:13px;color:var(--muted);margin:8px 0 0}
+#suggestionHelp:empty{display:none}
+#status{margin:20px 0 14px;color:var(--muted);font-size:14px}
+#status.error{color:#ffb4b4}
+.paper{padding:22px;margin-bottom:15px}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:11px}
+.badge{font-size:12px;background:#253c58;color:#d8e7fa;border-radius:5px;padding:3px 9px}
+.badge.open{background:#17453e;color:#a1edd9}
+.paper h2{font-size:21px;line-height:1.4;margin:0 0 10px;overflow-wrap:anywhere}
+.authors,.details{font-size:14px;color:var(--muted);margin:6px 0;overflow-wrap:anywhere}
+.actions{display:flex;align-items:center;gap:18px;margin-top:18px;flex-wrap:wrap}
+.actions a{color:#9bcaff;text-decoration:none;font-size:14px;font-weight:600}
+.actions a:hover{text-decoration:underline}
+.side-panel{padding:20px;margin-bottom:18px}
+.side-panel h2{display:flex;align-items:center;gap:9px;font-size:17px;margin:0 0 15px}
+.side-topic,.reading-preview{display:block;width:100%;text-align:left;background:none;border:0;border-top:1px solid var(--line);padding:13px 0;color:var(--text);font-size:14px}
+.side-topic span{display:block;font-size:12px;color:var(--muted);margin-top:3px}
+.reading-preview{cursor:pointer;overflow-wrap:anywhere}
+.side-panel p{font-size:14px;color:var(--muted)}
+.secondary{background:#1b344e;border:1px solid #3b5775;color:#dce9fa;border-radius:7px;padding:9px 12px}
+.empty{border:1px dashed #3a536d;border-radius:12px;padding:38px 20px;color:var(--muted);text-align:center}
+footer{font-size:12px;color:var(--muted);margin-top:25px}
+footer a{color:#a5ceff}
+.icon{width:20px;height:20px;flex:none}
+@media(min-width:1450px){main{padding:34px 40px}}
+@media(max-width:1100px){.shell{grid-template-columns:160px minmax(0,1fr)}.layout{grid-template-columns:minmax(0,1fr) 230px}main{padding:24px}.brand{font-size:21px}}
+@media(max-width:900px){.shell{grid-template-columns:1fr}nav{display:flex;gap:8px;padding:10px 20px;border-right:0;border-bottom:1px solid var(--line)}nav button{width:auto;margin:0}.layout{grid-template-columns:minmax(0,1fr) 230px}}
+@media(max-width:680px){.layout{grid-template-columns:1fr}main{padding:22px 16px}header{padding:17px}header small{display:none}.search-row{flex-wrap:wrap}.primary{flex:1}.paper{padding:18px}.paper h2{font-size:19px}}
+
+.account-controls{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-left:auto}
+#accountEmail{font-size:13px;color:var(--muted);max-width:200px;overflow-wrap:anywhere}
+header>small{margin-left:auto}
+dialog{background:#112238;color:var(--text);border:1px solid #415b76;border-radius:16px;padding:26px;width:min(440px,calc(100% - 28px));max-height:90vh;overflow:auto}
+dialog::backdrop{background:#020b18c9}
+dialog h2{margin:0 0 8px;font-size:25px}
+dialog p{font-size:14px;color:var(--muted)}
+dialog label{display:block;margin:16px 0 7px;font-size:14px}
+dialog input{display:block}
+.account-actions{display:flex;gap:10px;margin-top:22px}
+.account-actions .primary{flex:1}
+#accountMessage{min-height:24px;margin-bottom:0}
+#accountSwitch{margin-top:18px;background:none;border:0;padding:0;color:#9bcaff;text-decoration:underline;font-size:14px}
+@media(max-width:850px){header{flex-wrap:wrap}header>small{display:none}.account-controls{gap:7px}#accountEmail{max-width:160px}}
+@media(max-width:500px){.account-controls{width:100%;margin-left:0}#accountEmail{max-width:100%}}
+</style>
+</head>
+<body>
+<header>
+<span class="brand-icon" aria-hidden="true">
+<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5C8 2 4 3 2 4v15c4-2 7-1 10 1 3-2 6-3 10-1V4c-3-1-6-2-10 1Zm0 0v15"/></svg>
+</span>
+<span class="brand">Research Explorer</span>
+<small>Research across disciplines</small>
+<div class="account-controls">
+<span id="accountEmail"></span>
+<button id="loginOpen" class="secondary" type="button">Log in</button>
+<button id="signupOpen" class="primary" type="button">Sign up</button>
+<button id="logoutButton" class="secondary" type="button" hidden>Log out</button>
+</div>
+</header>
+
+<div class="shell">
+<nav aria-label="Main navigation">
+<button id="discoverNav" class="active" type="button">⌕ <span>Discover</span></button>
+<button id="readingNav" type="button">◇ <span>Reading list</span></button>
+</nav>
+<main>
+<h1 id="pageTitle">Discover research across disciplines</h1>
+<p class="subtitle" id="pageSubtitle">Explore papers, journals, and conference proceedings.</p>
+<div class="layout">
+<section aria-label="Research publications">
+<form id="searchForm" class="search-panel">
+<div class="tabs" aria-label="Search type">
+<button type="button" data-mode="topic" aria-pressed="true">Topic / title</button>
+<button type="button" data-mode="journal" aria-pressed="false">Journal</button>
+<button type="button" data-mode="conference" aria-pressed="false">Conference</button>
+</div>
+<div class="search-row">
+<input id="query" aria-label="Search publications" placeholder="Search any research topic…" required minlength="2" maxlength="200" autocomplete="off">
+<button id="searchButton" class="primary" type="submit">Search</button>
+</div>
+<div id="suggestions" aria-label="Search suggestions" hidden></div>
+<p id="suggestionHelp" role="status"></p>
+<div class="chips" aria-label="Example topics">
+<button type="button" data-topic="Artificial intelligence">Artificial intelligence</button>
+<button type="button" data-topic="Renewable energy">Renewable energy</button>
+<button type="button" data-topic="Economics">Economics</button>
+</div>
+</form>
+<p id="status" role="status" aria-live="polite">Enter a topic or select an example to begin.</p>
+<div id="results" aria-busy="false"><div class="empty">Find research relevant to your next idea.</div></div>
+</section>
+<aside>
+<section class="side-panel">
+<h2>Explore topics</h2>
+<button class="side-topic" type="button" data-topic="Artificial intelligence">Artificial intelligence<span>Computer science & applications</span></button>
+<button class="side-topic" type="button" data-topic="Renewable energy">Renewable energy<span>Energy & engineering</span></button>
+<button class="side-topic" type="button" data-topic="Economics">Economics<span>Business & social sciences</span></button>
+<button class="side-topic" type="button" data-topic="Public health">Public health<span>Medicine & life sciences</span></button>
+</section>
+<section class="side-panel">
+<h2>Reading list <span id="readingCount"></span></h2>
+<div id="readingPreview"><p>Loading reading list…</p></div>
+<button id="viewReading" class="secondary" type="button">View reading list</button>
+<p id="readingHint">Log in to access your private reading list.</p>
+</section>
+</aside>
+</div>
+<footer>Metadata: <a href="https://openalex.org/" target="_blank" rel="noopener noreferrer">OpenAlex</a> · Coverage and full-text access vary by publication.</footer>
+</main>
+</div>
+
+
+<dialog id="accountDialog" aria-labelledby="accountTitle">
+<form id="accountForm">
+<h2 id="accountTitle">Log in</h2>
+<p id="accountDescription">Access your private reading list on any device.</p>
+<label for="accountEmailInput">Email address</label>
+<input id="accountEmailInput" type="email" maxlength="254"
+  autocomplete="email" required>
+<label for="accountPassword">Password</label>
+<input id="accountPassword" type="password" minlength="12" maxlength="128"
+  autocomplete="current-password" required>
+<p>Use 12–128 characters.</p>
+<div class="account-actions">
+<button id="accountSubmit" class="primary" type="submit">Log in</button>
+<button id="accountCancel" class="secondary" type="button">Cancel</button>
+</div>
+<p id="accountMessage" role="status" aria-live="polite"></p>
+<button id="accountSwitch" type="button">New here? Create an account</button>
+</form>
+</dialog>
+<script>
+const el=id=>document.getElementById(id);
+const query=el('query'),results=el('results'),status=el('status');
+let mode='topic',selected=null,view='discover',saved=new Map(),lastResults=[];
+let suggestionTimer,suggestionController,searchController;
+let searchVersion=0;
+
+function node(tag,text,cls){
+  const item=document.createElement(tag);
+  if(text!==undefined)item.textContent=text;
+  if(cls)item.className=cls;
+  return item;
+}
+function setStatus(text,error=false){
+  status.textContent=text;
+  status.className=error?'error':'';
+}
+function safeURL(raw){
+  try{
+    const url=new URL(raw);
+    return ['https:','http:'].includes(url.protocol)?url.href:null;
+  }catch{return null;}
+}
+async function api(url,options={}){
+  const response=await fetch(url,options);
+  let data;
+  try{data=await response.json();}
+  catch{throw new Error('Unexpected server response. Please try again.');}
+  if(!response.ok)throw new Error(typeof data.detail==='string'?data.detail:'Request failed. Please try again.');
+  return data;
+}
+function showView(next){
+  view=next;
+  el('discoverNav').classList.toggle('active',view==='discover');
+  el('readingNav').classList.toggle('active',view==='reading');
+  el('searchForm').hidden=view==='reading';
+  el('pageTitle').textContent=view==='reading'?'Your reading list':'Discover research across disciplines';
+  el('pageSubtitle').textContent=view==='reading'
+    ?'Keep useful publications together for later.'
+    :'Explore papers, journals, and conference proceedings.';
+}
+function updatePreview(){
+  el('readingCount').textContent=saved.size?'· '+saved.size:'';
+  const box=el('readingPreview');
+  box.replaceChildren();
+  if(!saved.size)box.append(node('p','Save a paper to start your reading list.'));
+  [...saved.values()].slice(0,3).forEach(paper=>{
+    const button=node('button',paper.title,'reading-preview');
+    button.type='button';
+    button.onclick=openReading;
+    box.append(button);
+  });
+}
+async function loadReading(){
+  const data=await api('/api/reading-list');
+  saved=new Map(data.papers.map(paper=>[paper.id,paper]));
+  updatePreview();
+}
+function card(paper){
+  const article=node('article',undefined,'paper');
+  const badges=node('div',undefined,'badges');
+  badges.append(node('span',paper.field||'Research','badge'));
+  if(paper.open_access)badges.append(node('span','Open access','badge open'));
+  article.append(badges,node('h2',paper.title));
+  const authors=paper.authors||[];
+  article.append(node('p',authors.slice(0,4).join(', ')+(authors.length>4?' et al.':'')||'Authors unavailable','authors'));
+  article.append(node('p',[paper.year,paper.journal].filter(Boolean).join(' · '),'details'));
+  const actions=node('div',undefined,'actions');
+  const url=safeURL(paper.url);
+  if(url){
+    const link=node('a','View publication ↗');
+    link.href=url;link.target='_blank';link.rel='noopener noreferrer';
+    actions.append(link);
+  }
+  const button=node('button',saved.has(paper.id)?'✓ Saved':'＋ Save paper','save-btn');
+  button.type='button';
+  button.classList.toggle('saved',saved.has(paper.id));
+  if(view==='reading')button.textContent='Remove';
+  button.onclick=async()=>{
+    if(!accountUser){openAccount('login');return;}
+    button.disabled=true;
+    const removing=saved.has(paper.id);
+    try{
+      if(removing){
+        const workId=paper.id.split('/').pop();
+        await api('/api/reading-list/'+encodeURIComponent(workId),{method:'DELETE'});
+        saved.delete(paper.id);
+      }else{
+        await api('/api/reading-list',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify(paper)
+        });
+        saved.set(paper.id,paper);
+      }
+      updatePreview();
+      if(view==='reading')renderReading();
+      else{
+        button.textContent=saved.has(paper.id)?'✓ Saved':'＋ Save paper';
+        button.classList.toggle('saved',saved.has(paper.id));
+        setStatus(removing?'Removed from your reading list.':'Paper saved to your reading list.');
+      }
+    }catch(error){setStatus(error.message,true);}
+    finally{button.disabled=false;}
+  };
+  actions.append(button);article.append(actions);
+  return article;
+}
+function render(papers,emptyMessage){
+  results.replaceChildren();
+  if(papers.length)results.append(...papers.map(card));
+  else results.append(node('div',emptyMessage,'empty'));
+}
+function renderReading(){
+  setStatus(saved.size+' saved publications');
+  render([...saved.values()],'Your reading list is empty. Search for papers and save the ones you need.');
+}
+async function openReading(){
+  if(!accountUser){openAccount('login');return;}
+  ++searchVersion;
+  if(searchController)searchController.abort();
+  results.setAttribute('aria-busy','false');
+  showView('reading');
+  setStatus('Loading reading list…');
+  try{await loadReading();renderReading();}
+  catch(error){setStatus(error.message,true);}
+}
+function changeMode(next){
+  mode=next;selected=null;
+  clearTimeout(suggestionTimer);
+  if(suggestionController)suggestionController.abort();
+  el('suggestions').hidden=true;
+  el('suggestionHelp').textContent='';
+  document.querySelectorAll('[data-mode]').forEach(button=>{
+    button.setAttribute('aria-pressed',String(button.dataset.mode===mode));
+  });
+  query.placeholder=mode==='topic'?'Search any research topic…':
+    mode==='journal'?'Type a journal name…':'Type a conference or proceedings name…';
+}
+async function search(){
+  const text=query.value.trim();
+  if(text.length<2){query.focus();return;}
+  if(mode!=='topic'&&!selected){
+    setStatus('Choose a '+mode+' from the suggestions first.',true);
+    return;
+  }
+  clearTimeout(suggestionTimer);
+  if(suggestionController)suggestionController.abort();
+  el('suggestions').hidden=true;
+  if(searchController)searchController.abort();
+  const controller=new AbortController();
+  searchController=controller;
+  const version=++searchVersion;
+  showView('discover');
+  el('searchButton').disabled=true;
+  results.setAttribute('aria-busy','true');
+  setStatus('Searching publications…');
+  try{
+    const params=new URLSearchParams({q:text,mode});
+    if(selected)params.set(mode==='topic'?'topic_id':'source_id',selected.id);
+    const data=await api('/api/papers?'+params,{signal:controller.signal});
+    if(version!==searchVersion)return;
+    lastResults=data.papers||[];
+    setStatus(Number(data.total).toLocaleString()+' matches · Showing '+lastResults.length+
+      ' · '+(data.order==='newest'?'Newest first':'By relevance'));
+    render(lastResults,'No matches found. Try different words or a broader topic.');
+  }catch(error){
+    if(error.name!=='AbortError'&&version===searchVersion)setStatus(error.message,true);
+  }finally{
+    if(searchController===controller){
+      el('searchButton').disabled=false;
+      results.setAttribute('aria-busy','false');
+    }
+  }
+}
+async function suggest(text){
+  const requestedMode=mode;
+  const controller=new AbortController();
+  suggestionController=controller;
+  el('suggestionHelp').textContent='Loading suggestions…';
+  try{
+    const params=new URLSearchParams({q:text,mode:requestedMode});
+    const data=await api('/api/suggestions?'+params,{signal:controller.signal});
+    if(query.value.trim()!==text||mode!==requestedMode)return;
+    const box=el('suggestions');box.replaceChildren();
+    for(const item of data.suggestions||[]){
+      const button=node('button');button.type='button';
+      button.append(node('span',item.name));
+      if(item.detail)button.append(node('small',item.detail));
+      button.onclick=()=>{
+        selected=item;query.value=item.name;
+        box.hidden=true;el('suggestionHelp').textContent='Selected: '+item.name;
+        search();
+      };
+      box.append(button);
+    }
+    box.hidden=!box.childElementCount;
+    el('suggestionHelp').textContent=box.hidden
+      ?(mode==='topic'?'No suggestions. You can still search your words.':'No matching source found. Try its full name.')
+      :'Select a suggestion, or continue typing.';
+  }catch(error){
+    if(error.name!=='AbortError')el('suggestionHelp').textContent=error.message;
+  }
+}
+query.addEventListener('input',()=>{
+  selected=null;clearTimeout(suggestionTimer);
+  if(suggestionController)suggestionController.abort();
+  el('suggestions').hidden=true;el('suggestionHelp').textContent='';
+  const text=query.value.trim();
+  if(text.length>=3)suggestionTimer=setTimeout(()=>suggest(text),700);
+});
+query.addEventListener('keydown',event=>{
+  if(event.key==='Escape')el('suggestions').hidden=true;
+  if(event.key==='ArrowDown'&&!el('suggestions').hidden){
+    const first=el('suggestions').querySelector('button');
+    if(first){event.preventDefault();first.focus();}
+  }
+});
+el('searchForm').addEventListener('submit',event=>{event.preventDefault();search();});
+document.querySelectorAll('[data-mode]').forEach(button=>{
+  button.onclick=()=>{changeMode(button.dataset.mode);query.value='';query.focus();};
+});
+document.querySelectorAll('[data-topic]').forEach(button=>{
+  button.onclick=()=>{
+    showView('discover');changeMode('topic');
+    query.value=button.dataset.topic;search();
+  };
+});
+el('readingNav').onclick=openReading;
+el('viewReading').onclick=openReading;
+el('discoverNav').onclick=()=>{
+  ++searchVersion;
+  if(searchController)searchController.abort();
+  showView('discover');
+  render(lastResults,'Find research relevant to your next idea.');
+  setStatus(lastResults.length?'Your latest search results.':'Enter a topic to begin.');
+};
+
+
+let accountUser=null;
+let accountMode='login';
+const accountDialog=el('accountDialog');
+
+function updateAccountControls(){
+  el('loginOpen').hidden=!!accountUser;
+  el('signupOpen').hidden=!!accountUser;
+  el('logoutButton').hidden=!accountUser;
+  el('accountEmail').textContent=accountUser?accountUser.email:'';
+  el('readingHint').textContent=accountUser
+    ?'Private to your account. Available across devices.'
+    :'Log in to access your private reading list.';
+  if(!accountUser){
+    saved.clear();
+    updatePreview();
+    el('readingPreview').replaceChildren(
+      node('p','Log in to save and organize publications.')
+    );
+  }
+}
+
+function openAccount(next){
+  accountMode=next;
+  const signup=next==='signup';
+  el('accountTitle').textContent=signup?'Create your account':'Log in';
+  el('accountDescription').textContent=signup
+    ?'Save publications in your own private reading list.'
+    :'Access your private reading list on any device.';
+  el('accountSubmit').textContent=signup?'Create account':'Log in';
+  el('accountSwitch').textContent=signup
+    ?'Already registered? Log in':'New here? Create an account';
+  el('accountPassword').autocomplete=signup?'new-password':'current-password';
+  el('accountPassword').value='';
+  el('accountMessage').textContent='';
+  if(!accountDialog.open)accountDialog.showModal();
+}
+
+el('loginOpen').onclick=()=>openAccount('login');
+el('signupOpen').onclick=()=>openAccount('signup');
+el('accountCancel').onclick=()=>{
+  accountDialog.close();
+  el('accountPassword').value='';
+};
+accountDialog.addEventListener('close',()=>{
+  el('accountPassword').value='';
+});
+el('accountSwitch').onclick=()=>{
+  openAccount(accountMode==='login'?'signup':'login');
+};
+
+el('accountForm').addEventListener('submit',async event=>{
+  event.preventDefault();
+  const button=el('accountSubmit');
+  const switchButton=el('accountSwitch');
+  button.disabled=true;
+  switchButton.disabled=true;
+  el('accountMessage').textContent='Please wait…';
+  try{
+    const user=await api('/api/auth/'+accountMode,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        email:el('accountEmailInput').value.trim(),
+        password:el('accountPassword').value
+      })
+    });
+    accountUser=user;
+    updateAccountControls();
+    accountDialog.close();
+    el('accountPassword').value='';
+    try{
+      await loadReading();
+      if(view==='reading')renderReading();
+      else render(lastResults,'Search for a topic to discover publications.');
+      setStatus('Logged in. You can now save papers.');
+    }catch{
+      setStatus('Logged in. Reading list could not load; please retry.',true);
+    }
+  }catch(error){
+    el('accountMessage').textContent=error.message;
+  }finally{
+    button.disabled=false;
+    switchButton.disabled=false;
+  }
+});
+
+el('logoutButton').onclick=async()=>{
+  const button=el('logoutButton');
+  button.disabled=true;
+  try{
+    await api('/api/auth/logout',{method:'POST'});
+    accountUser=null;
+    updateAccountControls();
+    showView('discover');
+    render(lastResults,'Search for a topic to discover publications.');
+    setStatus('You have logged out.');
+  }catch(error){
+    setStatus(error.message,true);
+  }finally{
+    button.disabled=false;
+  }
+};
+
+async function initializeAccount(){
+  updateAccountControls();
+  try{
+    const response=await fetch('/api/auth/me');
+    if(response.status===401)return;
+    if(!response.ok)throw new Error('Account service unavailable.');
+    accountUser=await response.json();
+    updateAccountControls();
+    await loadReading();
+  }catch{
+    setStatus('Account details could not load. Please refresh or log in.',true);
+  }
+}
+initializeAccount();
+
+</script>
+</body>
+</html>
