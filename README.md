@@ -18,6 +18,13 @@ https://37.27.39.68:8002/dashboard
 - Responsive navy dashboard
 - HTTPS deployment with scheduled certificate renewal
 
+## Dashboard Preview
+
+Search research topics, journals, and conference proceedings through
+a responsive dashboard, with account access and private reading lists.
+
+![Research Explorer dashboard](docs/images/research-dashboard.png)
+
 ## Dashboard
 
 Search by topic or paper title, or select a journal or conference source
