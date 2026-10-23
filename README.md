@@ -23,16 +23,13 @@ Search research topics, journals, and conference proceedings, and save papers to
 
 ## Dashboard Preview
 
-Search research topics, journals, and conference proceedings through
-a responsive dashboard, with account access and private reading lists.
+Search by topic or paper title, or select a journal or conference from
+the suggestions. Create an account to save papers to a private reading list.
+
+Searches currently display the first ten matches. Selected journals,
+conferences, and suggested topics show publications newest first.
 
 ![Research Explorer dashboard](docs/images/research-dashboard.png)
-
-## Dashboard
-
-Search by topic or paper title, or select a journal or conference source
-from the suggestions. Results currently show the first ten matches.
-Selected sources and topics return publications newest first.
 
 ## Technologies
 
