@@ -26,9 +26,6 @@ Search research topics, journals, and conference proceedings, and save papers to
 Search by topic or paper title, or select a journal or conference from
 the suggestions. Create an account to save papers to a private reading list.
 
-Searches currently display the first ten matches. Selected journals,
-conferences, and suggested topics show publications newest first.
-
 ![Research Explorer dashboard](docs/images/research-dashboard.png)
 
 ## Technologies
