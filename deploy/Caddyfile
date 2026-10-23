@@ -20,3 +20,4 @@ https://37.27.39.68:8002 {
     tls /etc/letsencrypt/live/research-ip/fullchain.pem /etc/letsencrypt/live/research-ip/privkey.pem
     reverse_proxy web:8000
 }
+

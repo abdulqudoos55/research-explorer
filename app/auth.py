@@ -200,3 +200,4 @@ async def logout(request: Request, response: Response):
         COOKIE, path="/", secure=True, httponly=True, samesite="strict"
     )
     return {"status": "logged_out"}
+

@@ -143,3 +143,4 @@ async def suggestions(
         raise HTTPException(502, "Could not connect for suggestions.")
     except (ValueError, TypeError, KeyError, AttributeError):
         raise HTTPException(502, "Invalid suggestion response.")
+

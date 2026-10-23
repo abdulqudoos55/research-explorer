@@ -24,3 +24,4 @@ def send_email(recipient: str, subject: str, body: str):
             os.environ["SMTP_PASSWORD"],
         )
         smtp.send_message(message)
+

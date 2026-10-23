@@ -14,3 +14,4 @@ cd /opt/research-explorer
   -f compose.ip.yaml \
   exec -T proxy \
   caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile --force
+

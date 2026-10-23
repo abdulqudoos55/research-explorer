@@ -73,3 +73,4 @@ app.include_router(reading_router)
 
 from app.auth import router as auth_router
 app.include_router(auth_router)
+

@@ -98,3 +98,4 @@ async def remove_paper(
         )
 
     return {"status": "removed"}
+

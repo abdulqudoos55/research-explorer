@@ -8,3 +8,4 @@ Wants=network-online.target
 Type=oneshot
 ExecStart=/opt/research-explorer/deploy/renew-ip-certificate.sh
 TimeoutStartSec=600
+
