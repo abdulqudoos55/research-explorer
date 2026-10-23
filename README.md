@@ -3,9 +3,12 @@
 A research discovery platform with topic, journal, and conference search,
 user accounts, and private reading lists.
 
-## Live dashboard
+## Live Dashboard
 
-https://37.27.39.68:8002/dashboard
+[Open Research Explorer](https://37.27.39.68:8002/dashboard)
+
+Search research topics, journals, and conference proceedings, and save papers to your private reading list.
+
 
 ## Features
 
